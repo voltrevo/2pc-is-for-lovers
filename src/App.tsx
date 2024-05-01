@@ -1,5 +1,6 @@
 import Ctx from './Ctx';
 import Home from './Home';
+import Host from './Host';
 import Todo from './Todo';
 import never from './never';
 
@@ -12,7 +13,7 @@ function App() {
   }
 
   if (page === 'Host') {
-    return <Todo>Host page</Todo>;
+    return <Host />;
   }
 
   if (page === 'Join') {

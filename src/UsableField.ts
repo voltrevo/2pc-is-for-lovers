@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Emitter from './Emitter';
 
 export default class UsableField<T> extends Emitter<{ update(): void }> {
-  // eslint-disable-next-line no-unused-vars
   constructor(public value: T) {
     super();
   }

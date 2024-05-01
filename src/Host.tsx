@@ -5,6 +5,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 export default function Host() {
   const ctx = Ctx.use();
   const key = ctx.key.use();
+  ctx.host();
 
   return (
     <div>

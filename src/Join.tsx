@@ -9,8 +9,13 @@ export default function Join() {
       <h1>Join</h1>
       <p>Scan your friend's QR code:</p>
       <Scanner
-        onResult={(text, result) => console.log(text, result)}
+        onResult={(text, _result) => {
+          ctx.join(text);
+        }}
         onError={error => console.log(error?.message)}
+        components={{
+          audio: false,
+        }}
       />
       <p>
         Or paste the code here:

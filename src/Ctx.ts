@@ -14,7 +14,7 @@ const MessageStart = z.object({
 });
 
 export default class Ctx {
-  page = new UsableField<'Home' | 'Host' | 'Join' | 'Choose'>('Home');
+  page = new UsableField<'Home' | 'Host' | 'Join' | 'Connecting' | 'Choose'>('Home');
   mode: 'Host' | 'Join' = 'Host';
   key = new UsableField(Key.random());
   room = new UsableField<PrivateRoom | undefined>(undefined);
@@ -60,6 +60,8 @@ export default class Ctx {
     if (this.key.value.base58() === keyBase58) {
       return;
     }
+
+    this.page.set('Connecting');
 
     this.mode = 'Join';
     this.key.set(Key.fromBase58(keyBase58));

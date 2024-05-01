@@ -21,6 +21,10 @@ function App() {
     return <Join />;
   }
 
+  if (page === 'Connecting') {
+    return <h1>Connecting...</h1>;
+  }
+
   if (page === 'Choose') {
     return <Choose />;
   }

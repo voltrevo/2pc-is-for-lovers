@@ -1,3 +1,4 @@
+import Choose from './Choose';
 import Ctx from './Ctx';
 import Home from './Home';
 import Host from './Host';
@@ -18,6 +19,10 @@ function App() {
 
   if (page === 'Join') {
     return <Join />;
+  }
+
+  if (page === 'Choose') {
+    return <Choose />;
   }
 
   never(page);

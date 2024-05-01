@@ -14,7 +14,7 @@ const MessageStart = z.object({
 });
 
 export default class Ctx {
-  page = new UsableField<'Home' | 'Host' | 'Join'>('Home');
+  page = new UsableField<'Home' | 'Host' | 'Join' | 'Choose'>('Home');
   mode: 'Host' | 'Join' = 'Host';
   key = new UsableField(Key.random());
   room = new UsableField<PrivateRoom | undefined>(undefined);
@@ -45,15 +45,22 @@ export default class Ctx {
     this.mode = 'Host';
     const room = await this.connect();
 
+    room.removeAllListeners('message');
+
     room.on('message', message => {
       if (!MessageInit.safeParse(message).error) {
         room.send({ from: 'host', type: 'start' });
         console.log('start');
+        this.page.set('Choose');
       }
     });
   }
 
   async join(keyBase58: string) {
+    if (this.key.value.base58() === keyBase58) {
+      return;
+    }
+
     this.mode = 'Join';
     this.key.set(Key.fromBase58(keyBase58));
     const room = await this.connect();
@@ -62,6 +69,7 @@ export default class Ctx {
     room.on('message', message => {
       if (!MessageStart.safeParse(message).error) {
         console.log('start');
+        this.page.set('Choose');
       }
     });
   }

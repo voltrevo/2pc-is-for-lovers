@@ -1,7 +1,7 @@
 import Ctx from './Ctx';
 import Home from './Home';
 import Host from './Host';
-import Todo from './Todo';
+import Join from './Join';
 import never from './never';
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
   }
 
   if (page === 'Join') {
-    return <Todo>Join page</Todo>;
+    return <Join />;
   }
 
   never(page);

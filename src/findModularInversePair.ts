@@ -58,15 +58,18 @@ function randomBigint(limit: bigint) {
   while (true) {
     let rand = 0n;
     let randBits = 0;
+    const buf = new Uint32Array(1);
 
-    while (bits - randBits > 52) {
-      rand <<= 52n;
-      rand += BigInt(Math.random() * (2 ** 52));
-      randBits += 52;
+    while (bits - randBits > 32) {
+      rand <<= 32n;
+      crypto.getRandomValues(buf);
+      rand += BigInt(buf[0]);
+      randBits += 32;
     }
 
     rand <<= BigInt(bits - randBits);
-    rand += BigInt(Math.floor(Math.random() * (2 ** (bits - randBits))));
+    crypto.getRandomValues(buf);
+    rand += BigInt(buf[0]) & ((1n << BigInt(bits - randBits)) - 1n);
 
     if (rand < limit) {
       return rand;

@@ -6,21 +6,9 @@ import Emitter from './Emitter';
 import AsyncQueue from './AsyncQueue';
 import runHostProtocol from './runHostProtocol';
 import runJoinerProtocol from './runJoinerProtocol';
-
-const MessageInit = z.object({
-  from: z.literal('joiner'),
-  type: z.literal('init'),
-});
-
-const MessageStart = z.object({
-  from: z.literal('host'),
-  type: z.literal('start'),
-});
-
-const MessageReady = z.object({
-  from: z.union([z.literal('host'), z.literal('joiner')]),
-  type: z.literal('ready'),
-});
+import { makeZodChannel } from './ZodChannel';
+import { TrustedHashRevealer } from './TrustedHashRevealer';
+import { MessageInit, MessageReady, MessageStart } from './MessageTypes';
 
 type PageKind =
   | 'Home'
@@ -30,7 +18,8 @@ type PageKind =
   | 'Choose'
   | 'Waiting'
   | 'Calculating'
-  | 'Result';
+  | 'Result'
+  | 'Error';
 
 export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void }> {
   page = new UsableField<PageKind>('Home');
@@ -40,6 +29,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
   choicesReversed = Math.random() < 0.5;
   friendReady = false;
   result = new UsableField<'🙂' | '😍' | undefined>(undefined);
+  errorMsg = new UsableField<string>('');
 
   async connect(): Promise<PrivateRoom> {
     if (this.room.value) {
@@ -72,7 +62,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     room.on('message', message => {
       if (!MessageInit.safeParse(message).error) {
         room.send({ from: 'host', type: 'start' });
-        this.runProtocol(room);
+        this.runProtocol(room).catch(this.handleProtocolError);
       }
     });
   }
@@ -92,7 +82,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     const listener = (message: unknown) => {
       if (!MessageStart.safeParse(message).error) {
         room.off('message', listener);
-        this.runProtocol(room);
+        this.runProtocol(room).catch(this.handleProtocolError);
       }
     };
 
@@ -114,16 +104,18 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
       }
     });
 
-    const [choice] = await Promise.all([
+    const channel = makeZodChannel(
+      (msg: unknown) => room.send(msg),
+      () => msgQueue.shift(),
+    );
+
+    const [choice, _readyMsg] = await Promise.all([
       new Promise<'🙂' | '😍'>(resolve => {
         this.once('ready', resolve);
       }),
-      msgQueue.shift().then(msg => {
-        if (MessageReady.safeParse(msg).error) {
-          throw new Error('Unexpected message');
-        }
-
+      channel.recv(MessageReady).then(msg => {
         this.friendReady = true;
+        return msg;
       }),
     ]);
 
@@ -133,13 +125,27 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
       ? runHostProtocol
       : runJoinerProtocol;
 
-    const result = await runSideProtocol(msgQueue, choice);
+    const result = await runSideProtocol(
+      channel,
+      input => new TrustedHashRevealer(
+        'https://trusted-hash-revealer.deno.dev/keccak256',
+        input,
+      ),
+      choice,
+    );
+
     this.result.set(result);
 
     room.socket.close();
 
     this.page.set('Result');
   }
+
+  handleProtocolError = (error: unknown) => {
+    console.error('Protocol error:', error);
+    this.errorMsg.set(`Protocol error: ${JSON.stringify(error)}`);
+    this.page.set('Error');
+  };
 
   async send(choice: '🙂' | '😍') {
     this.emit('ready', choice);

@@ -1,9 +1,11 @@
 import Calculating from './Calculating';
 import Choose from './Choose';
 import Ctx from './Ctx';
+import Error from './Error';
 import Home from './Home';
 import Host from './Host';
 import Join from './Join';
+import Result from './Result';
 import Waiting from './Waiting';
 import never from './never';
 
@@ -27,6 +29,10 @@ function App() {
     content = <Waiting />;
   } else if (page === 'Calculating') {
     content = <Calculating />;
+  } else if (page === 'Result') {
+    content = <Result />;
+  } else if (page === 'Error') {
+    content = <Error />;
   } else {
     never(page);
   }

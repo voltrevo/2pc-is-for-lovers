@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-undef
+
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
@@ -28,5 +28,10 @@ module.exports = {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
+    'no-undef': 'off',
+    'no-mixed-operators': 'off',
+    'no-bitwise': 'off',
+    'no-constant-condition': 'off',
+    'no-useless-constructor': 'off',
   },
 };

@@ -6,6 +6,8 @@ export default function Result() {
   const result = ctx.result.use();
 
   return (
-    <div className='result'>{result}</div>
+    <div className='result'>
+      <center>{result}</center>
+    </div>
   );
 }

@@ -4,6 +4,8 @@ import UsableField from './UsableField';
 import { Key, PrivateRoom } from 'rendezvous-client';
 import Emitter from './Emitter';
 import AsyncQueue from './AsyncQueue';
+import runHostProtocol from './runHostProtocol';
+import runJoinerProtocol from './runJoinerProtocol';
 
 const MessageInit = z.object({
   from: z.literal('joiner'),
@@ -27,7 +29,8 @@ type PageKind =
   | 'Connecting'
   | 'Choose'
   | 'Waiting'
-  | 'Calculating';
+  | 'Calculating'
+  | 'Result';
 
 export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void }> {
   page = new UsableField<PageKind>('Home');
@@ -36,6 +39,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
   room = new UsableField<PrivateRoom | undefined>(undefined);
   choicesReversed = Math.random() < 0.5;
   friendReady = false;
+  result = new UsableField<'🙂' | '😍' | undefined>(undefined);
 
   async connect(): Promise<PrivateRoom> {
     if (this.room.value) {
@@ -99,9 +103,10 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     this.page.set('Choose');
 
     const msgQueue = new AsyncQueue<unknown>();
-    const myId = this.mode === 'Host' ? 'host' : 'joiner';
-    const friendId = this.mode === 'Host' ? 'joiner' : 'host';
-    const FriendMsg = z.object({ from: z.literal(friendId) });
+
+    const FriendMsg = z.object({
+      from: z.literal(this.mode === 'Host' ? 'joiner' : 'host'),
+    });
 
     room.on('message', (msg: unknown) => {
       if (!FriendMsg.safeParse(msg).error) {
@@ -123,6 +128,17 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     ]);
 
     this.page.set('Calculating');
+
+    const runSideProtocol = this.mode === 'Host'
+      ? runHostProtocol
+      : runJoinerProtocol;
+
+    const result = await runSideProtocol(msgQueue, choice);
+    this.result.set(result);
+
+    room.socket.close();
+
+    this.page.set('Result');
   }
 
   async send(choice: '🙂' | '😍') {

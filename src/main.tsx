@@ -7,6 +7,9 @@ import Ctx from './Ctx.ts';
 
 const ctx = new Ctx();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(window as any).ctx = ctx;
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Ctx.Provider value={ctx}>

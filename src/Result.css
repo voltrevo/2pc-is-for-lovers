@@ -1,0 +1,3 @@
+.result {
+  font-size: calc(0.4 * var(--aw));
+}

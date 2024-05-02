@@ -32,16 +32,26 @@ export default async function runJoinerProtocol(
 
   const encryptedSecretsMessage = await channel.recv(MessageEncryptedSecrets);
 
-  const messageToDecrypt = (
-    new CipherMessage(BigInt(
-      encryptedSecretsMessage.value[choice === '😍' ? 'love' : 'friendship'],
-    )).encrypt(cc)
-  );
+  // Note: A malicious host might make one of the options invalid or expensive
+  // to compute. This means our abort or delay could reveal information if we
+  // simply process our actual option and ignore the other. The simplest
+  // solution is to process both options and then just drop the one we don't
+  // need.
+
+  const decryptionOptions = {
+    love: new CipherMessage(BigInt(
+      encryptedSecretsMessage.value.love,
+    )).encrypt(cc),
+    friendship: new CipherMessage(BigInt(
+      encryptedSecretsMessage.value.friendship,
+    )).encrypt(cc),
+  };
 
   channel.send(MessageDecryptRequest, {
     from: 'joiner',
     type: 'decryptRequest',
-    value: messageToDecrypt.value.toString(),
+    value: decryptionOptions[choice === '😍' ? 'love' : 'friendship']
+      .value.toString(),
   });
 
   const decryptResultMessage = await channel.recv(MessageDecryptResult);
@@ -80,11 +90,14 @@ export default async function runJoinerProtocol(
 
     // Note: The user should be careful about revealing that malicious behavior
     // was detected, since this can sometimes reveal information that should
-    // have been hidden.
+    // have been hidden. (It seems like it might be ok in this app, but in
+    // principle, it's a concern.)
 
     // By enforcing the correct result of friendship, the malicious client can
     // only show love on their own device, which they are always able to do
-    // anyway.
+    // anyway. (On the flip side, if a protocol violation causes a friendship
+    // result that 'should' have been love, that's also something they can
+    // achieve legitimately by simply choosing friendship.)
     output = 0;
   }
 

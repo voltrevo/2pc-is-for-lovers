@@ -1,17 +1,11 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 13vmin;
-}
-
 .title {
-  font-size: 13vmin;
+  font-size: calc(0.13 * var(--aw));
   text-align: center;
 }
 
 .title.lovers {
-  font-size: 18vmin;
-  margin-top: -7vmin;
+  font-size: calc(0.18 * var(--aw));
+  margin-top: calc(-0.07 * var(--aw));
 }
 
 .main.buttons {

@@ -18,6 +18,7 @@ export default class Ctx {
   mode: 'Host' | 'Join' = 'Host';
   key = new UsableField(Key.random());
   room = new UsableField<PrivateRoom | undefined>(undefined);
+  choicesReversed = Math.random() < 0.5;
 
   async connect(): Promise<PrivateRoom> {
     if (this.room.value) {

@@ -5,7 +5,7 @@ export default function Home() {
   const ctx = Ctx.use();
 
   return (
-    <>
+    <div>
       <div className='title'>2PC IS FOR</div>
       <div className='title lovers'>LOVERS</div>
       <div className='title heart'>❤️</div>
@@ -57,6 +57,6 @@ export default function Home() {
           Join
         </button>
       </div>
-    </>
+    </div>
   );
 }

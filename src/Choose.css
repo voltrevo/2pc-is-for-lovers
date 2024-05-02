@@ -17,10 +17,18 @@
   cursor: pointer;
 }
 
+.choice.selected.😍 {
+  border: 5px solid #d73253;
+}
+
 .choice.selected {
   border: 5px solid #7c46c4;
 }
 
 .choice div {
   transform: translateY(calc(-0.04 * var(--aw)));
+}
+
+button.😍 {
+  background: #d73253;
 }

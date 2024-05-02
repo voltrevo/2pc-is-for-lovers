@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './Choose.css';
 import Ctx from './Ctx';
+import never from './never';
 
 export default function Choose() {
   const ctx = Ctx.use();
@@ -27,11 +28,21 @@ export default function Choose() {
       <div>
         <button
           disabled={selection === undefined}
-          style={{ width: '100%' }}
-        >Confirm</button>
+          style={{ width: '100%', lineHeight: '1.1em' }}
+          className={selection}
+        >{buttonText(selection)}</button>
       </div>
     </div>
   );
+}
+
+function buttonText(selection: '🙂' | '😍' | undefined) {
+  switch (selection) {
+  case '🙂': return 'Send Friendship 🙂';
+  case '😍': return 'Send Love 😍';
+  case undefined: return '(Choose then Confirm)';
+  default: never(selection);
+  }
 }
 
 function Choice({ selection, setSelection, type }: {
@@ -41,7 +52,7 @@ function Choice({ selection, setSelection, type }: {
 }) {
   return (
     <div
-      className={`choice ${selection === type && 'selected'}`}
+      className={`choice ${selection === type && 'selected'} ${type}`}
       onClick={() => setSelection(selection === type ? undefined : type)}
     ><div>{type}</div></div>
   );

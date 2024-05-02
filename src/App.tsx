@@ -1,8 +1,10 @@
+import Calculating from './Calculating';
 import Choose from './Choose';
 import Ctx from './Ctx';
 import Home from './Home';
 import Host from './Host';
 import Join from './Join';
+import Waiting from './Waiting';
 import never from './never';
 
 function App() {
@@ -21,6 +23,10 @@ function App() {
     content = <h1>Connecting...</h1>;
   } else if (page === 'Choose') {
     content = <Choose />;
+  } else if (page === 'Waiting') {
+    content = <Waiting />;
+  } else if (page === 'Calculating') {
+    content = <Calculating />;
   } else {
     never(page);
   }

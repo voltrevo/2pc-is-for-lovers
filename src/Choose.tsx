@@ -30,6 +30,13 @@ export default function Choose() {
           disabled={selection === undefined}
           style={{ width: '100%', lineHeight: '1.1em' }}
           className={selection}
+          onClick={() => {
+            if (selection === undefined) {
+              return;
+            }
+
+            ctx.send(selection);
+          }}
         >{buttonText(selection)}</button>
       </div>
     </div>

@@ -38,13 +38,24 @@ export default async function runJoinerProtocol(
   // solution is to process both options and then just drop the one we don't
   // need.
 
-  const decryptionOptions = {
-    love: new CipherMessage(BigInt(
-      encryptedSecretsMessage.value.love,
-    )).encrypt(cc),
+  const secrets = {
     friendship: new CipherMessage(BigInt(
       encryptedSecretsMessage.value.friendship,
-    )).encrypt(cc),
+    )),
+    love: new CipherMessage(BigInt(
+      encryptedSecretsMessage.value.love,
+    )),
+  };
+
+  if (secrets.love.value === 1n || secrets.friendship.value === 1n) {
+    // 1 isn't really a valid secret since we use discrete exponentiation for
+    // encryption. 1^key = 1, so the host would know if we picked this secret.
+    throw new Error('Invalid secrets');
+  }
+
+  const decryptionOptions = {
+    love: secrets.love.encrypt(cc),
+    friendship: secrets.friendship.encrypt(cc),
   };
 
   channel.send(MessageDecryptRequest, {

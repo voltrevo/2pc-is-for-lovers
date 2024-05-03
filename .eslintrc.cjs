@@ -33,5 +33,6 @@ module.exports = {
     'no-bitwise': 'off',
     'no-constant-condition': 'off',
     'no-useless-constructor': 'off',
+    'capitalized-comments': 'off',
   },
 };

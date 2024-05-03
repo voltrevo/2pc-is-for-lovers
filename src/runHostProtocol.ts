@@ -7,6 +7,8 @@ import {
 } from './MessageTypes';
 import CommutableCipher from './CommutableCipher';
 import CipherMessage from './CipherMessage';
+import randomBigint from './randomBigInt';
+import p, { isGenerator } from './p';
 
 export default async function runHostProtocol(
   channel: ZodChannel,
@@ -31,17 +33,12 @@ export default async function runHostProtocol(
   const friendMaskCommitment = await channel.recv(MessageMaskCommitment);
 
   const secrets = {
-    friendship: new CipherMessage(
-      // If they choose friendship, the result is friendship
-      // (regardless of our choice)
-      BigInt(0b10 | (0 ^ localMask)),
-      //             ☝️ here zero means friendship
-    ),
-    love: new CipherMessage(
-      // If they choose love, the result is love if we chose love
-      BigInt(0b100 | ((choice === '😍' ? 1 : 0) ^ localMask)),
-      //                                 ☝️ here one means love
-    ),
+    // If they choose friendship, the result is friendship
+    // (regardless of our choice)
+    friendship: createMessage('🙂', localMask),
+
+    // If they choose love, the result is love if we chose love
+    love: createMessage(choice, localMask),
   };
 
   const encryptedSecrets = {
@@ -100,4 +97,21 @@ export default async function runHostProtocol(
   }
 
   return output ? '😍' : '🙂';
+}
+
+function createMessage(result: '😍' | '🙂', mask: number) {
+  const messageBit = result === '😍' ? 1 : 0;
+  const maskedBit = messageBit ^ (mask & 1);
+
+  while (true) {
+    let m = randomBigint(p);
+
+    if (Number(m & 1n) !== maskedBit) {
+      m++;
+    }
+
+    if (isGenerator(m)) {
+      return new CipherMessage(m);
+    }
+  }
 }

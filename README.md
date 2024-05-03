@@ -1,30 +1,29 @@
-# React + TypeScript + Vite
+# 2PC IS FOR LOVERS ❤️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Did you ever fall in love with your best friend? Hope they feel the same, but
+afraid to lose the friendship?
 
-Currently, two official plugins are available:
+This app uses advanced cryptography to solve the problem! 🤓
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How it Works
 
-## Expanding the ESLint configuration
+1. [Open the app](https://voltrevo.github.io/2pc-is-for-lovers).
+2. Host a session.
+3. Get your friend to join.
+4. Choose love or friendship.
+5. If you both choose love, you'll both find out. Otherwise, you'll both see
+   friendship.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## They Really Won't Know?
 
-- Configure the top-level `parserOptions` property like this:
+Yes. Really.
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+This is an open source app.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+If you choose love but the result is friendship, only you will know. Even if
+your friend knows advanced cryptography.
+
+This is the [magic](https://www.youtube.com/watch?v=PzcDqegGoKI) of 2PC.
+
+All communication is end-to-end encrypted. The server/internet will not know
+either.

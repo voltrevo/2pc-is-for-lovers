@@ -1,8 +1,10 @@
 import './Home.css';
 import Ctx from './Ctx';
+import isKey from './isKey';
 
 export default function Home() {
   const ctx = Ctx.use();
+  const hasUrlKey = isKey(window.location.hash.slice(1));
 
   return (
     <div>
@@ -50,10 +52,18 @@ export default function Home() {
         know either.
       </p>
       <div className='main buttons'>
-        <button onClick={() => ctx.page.set('Host')}>
+        <button disabled={hasUrlKey} onClick={() => ctx.page.set('Host')}>
           Host
         </button>
-        <button onClick={() => ctx.page.set('Join')}>
+        <button onClick={() => {
+          const urlKey = window.location.hash.slice(1);
+
+          if (isKey(urlKey)) {
+            ctx.page.set('AutoJoin');
+          } else {
+            ctx.page.set('Join');
+          }
+        }}>
           Join
         </button>
       </div>

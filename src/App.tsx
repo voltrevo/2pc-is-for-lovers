@@ -1,3 +1,4 @@
+import AutoJoin from './AutoJoin';
 import Calculating from './Calculating';
 import Choose from './Choose';
 import Ctx from './Ctx';
@@ -21,6 +22,8 @@ function App() {
     content = <Host />;
   } else if (page === 'Join') {
     content = <Join />;
+  } else if (page === 'AutoJoin') {
+    content = <AutoJoin />;
   } else if (page === 'Connecting') {
     content = <h1>Connecting...</h1>;
   } else if (page === 'Choose') {

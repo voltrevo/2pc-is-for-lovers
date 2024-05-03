@@ -14,6 +14,7 @@ type PageKind =
   | 'Home'
   | 'Host'
   | 'Join'
+  | 'AutoJoin'
   | 'Connecting'
   | 'Choose'
   | 'Waiting'

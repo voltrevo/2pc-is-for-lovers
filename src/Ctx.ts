@@ -107,6 +107,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     const channel = makeZodChannel(
       (msg: unknown) => room.send(msg),
       () => msgQueue.shift(),
+      (msg: unknown) => msgQueue.push(msg),
     );
 
     const [choice, _readyMsg] = await Promise.all([

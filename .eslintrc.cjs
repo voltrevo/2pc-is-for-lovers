@@ -34,5 +34,6 @@ module.exports = {
     'no-constant-condition': 'off',
     'no-useless-constructor': 'off',
     'capitalized-comments': 'off',
+    'no-await-in-loop': 'off',
   },
 };

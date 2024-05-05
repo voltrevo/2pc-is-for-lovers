@@ -30,7 +30,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
   room = new UsableField<PrivateRoom | undefined>(undefined);
   choicesReversed = Math.random() < 0.5;
   friendReady = false;
-  result = new UsableField<'🙂' | '😍' | undefined>(undefined);
+  result = new UsableField<'🙂' | '😍' | 'malicious' | undefined>(undefined);
   errorMsg = new UsableField<string>('');
 
   async connect(): Promise<PrivateRoom> {

@@ -36,29 +36,28 @@ export default function Home() {
           see friendship.
         </li>
       </ol>
-      <h2>They <i>Really</i> Won't Know?</h2>
+      <h2>Disclaimer</h2>
       <p>
-        Yes. Really.
+        It's currently possible for a malicious friend to choose friendship and
+        find out whether you chose love. However, they risk exposing themselves
+        as malicious by doing so. This will be fixed in a future update.
       </p>
-      <p>
-        This is an&nbsp;
-        <a href='https://github.com/voltrevo/2pc-is-for-lovers'>open source</a>
-        &nbsp;app.
-      </p>
-      <p>
-        If you choose love but the result is
-        friendship, <i>only you</i> will know. Even if your friend knows
-        advanced cryptography.
-      </p>
-      <p>
-        This is the <a href='https://www.youtube.com/watch?v=PzcDqegGoKI'>
-          magic
-        </a> of 2PC.
-      </p>
-      <p>
-        All communication is end-to-end encrypted. The server/internet will not
-        know either.
-      </p>
+      <h2>About</h2>
+      <ul>
+        <li>
+          <a href='https://github.com/voltrevo/2pc-is-for-lovers'>
+            Open source
+          </a>.
+        </li>
+        <li>
+          <a href='https://www.youtube.com/watch?v=PzcDqegGoKI'>
+            More about 2PC
+          </a>.
+        </li>
+        <li>
+          All communication is end-to-end encrypted.
+        </li>
+      </ul>
       <div className='main buttons'>
         <button disabled={hasUrlKey} onClick={() => ctx.page.set('Host')}>
           Host

@@ -91,25 +91,10 @@ export default async function runJoinerProtocol(
 
   const totalMask = (localMask ^ (friendMask[0] ?? 0)) & 1;
   console.log({ totalMask });
-  let output = fullyMaskedOutput ^ totalMask;
+  const output = fullyMaskedOutput ^ totalMask;
 
   if (choice === '🙂' && output === 1) {
-    console.error([
-      'Friend did not follow protocol. Possibly malicious.',
-      'Refusing to acknowledge love result.',
-    ].join(' '));
-
-    // Note: The user should be careful about revealing that malicious behavior
-    // was detected, since this can sometimes reveal information that should
-    // have been hidden. (It seems like it might be ok in this app, but in
-    // principle, it's a concern.)
-
-    // By enforcing the correct result of friendship, the malicious client can
-    // only show love on their own device, which they are always able to do
-    // anyway. (On the flip side, if a protocol violation causes a friendship
-    // result that 'should' have been love, that's also something they can
-    // achieve legitimately by simply choosing friendship.)
-    output = 0;
+    return 'malicious';
   }
 
   return output ? '😍' : '🙂';

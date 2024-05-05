@@ -78,22 +78,10 @@ export default async function runHostProtocol(
 
   const totalMask = (localMask ^ (friendMask[0] ?? 0)) & 1;
   console.log({ totalMask });
-  let output = maskedOutputMessage.value ^ totalMask;
+  const output = maskedOutputMessage.value ^ totalMask;
 
   if (choice === '🙂' && output === 1) {
-    console.error([
-      'Friend did not follow protocol. Possibly malicious.',
-      'Refusing to acknowledge love result.',
-    ].join(' '));
-
-    // Note: The user should be careful about revealing that malicious behavior
-    // was detected, since this can sometimes reveal information that should
-    // have been hidden.
-
-    // By enforcing the correct result of friendship, the malicious client can
-    // only show love on their own device, which they are always able to do
-    // anyway.
-    output = 0;
+    return 'malicious';
   }
 
   return output ? '😍' : '🙂';

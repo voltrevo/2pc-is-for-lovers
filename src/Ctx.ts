@@ -12,6 +12,7 @@ import { MessageInit, MessageReady, MessageStart } from './MessageTypes';
 
 type PageKind =
   | 'Home'
+  | 'Share'
   | 'Host'
   | 'Join'
   | 'AutoJoin'

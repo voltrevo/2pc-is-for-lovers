@@ -22,7 +22,6 @@ export default function Host() {
           value={codeAndLink}
         />
       </center>
-
       <p>
         Or <CopyToClipboard text={codeAndLink}>
           <button style={{ padding: '0.5rem' }}>copy</button>

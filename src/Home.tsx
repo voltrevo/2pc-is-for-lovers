@@ -20,6 +20,14 @@ export default function Home() {
       </p>
       <h2>How it Works</h2>
       <ol>
+        <li>
+          <a href='#' onClick={() => {
+            ctx.page.set('Share');
+          }}>
+            Share
+          </a>
+          &nbsp;this app with your friend.
+        </li>
         <li>Host a session.</li>
         <li>Get your friend to join.</li>
         <li>Choose love or friendship.</li>

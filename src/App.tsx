@@ -7,6 +7,7 @@ import Home from './Home';
 import Host from './Host';
 import Join from './Join';
 import Result from './Result';
+import Share from './Share';
 import Waiting from './Waiting';
 import never from './never';
 
@@ -18,6 +19,8 @@ function App() {
 
   if (page === 'Home') {
     content = <Home />;
+  } else if (page === 'Share') {
+    content = <Share />;
   } else if (page === 'Host') {
     content = <Host />;
   } else if (page === 'Join') {

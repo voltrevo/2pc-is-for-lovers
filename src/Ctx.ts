@@ -1,7 +1,6 @@
 import z from 'zod';
 import { createContext, useContext } from 'react';
 import UsableField from './UsableField';
-import { Key, PrivateRoom } from 'rendezvous-client';
 import Emitter from './Emitter';
 import AsyncQueue from './AsyncQueue';
 import runHostProtocol from './runHostProtocol';
@@ -9,6 +8,7 @@ import runJoinerProtocol from './runJoinerProtocol';
 import { makeZodChannel } from './ZodChannel';
 import { TrustedHashRevealer } from './TrustedHashRevealer';
 import { MessageInit, MessageReady, MessageStart } from './MessageTypes';
+import { Key, RtcPairSocket } from 'rtc-pair-socket';
 
 type PageKind =
   | 'Home'
@@ -27,31 +27,37 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
   page = new UsableField<PageKind>('Home');
   mode: 'Host' | 'Join' = 'Host';
   key = new UsableField(Key.random());
-  room = new UsableField<PrivateRoom | undefined>(undefined);
+  socket = new UsableField<RtcPairSocket | undefined>(undefined);
   choicesReversed = Math.random() < 0.5;
   friendReady = false;
   result = new UsableField<'🙂' | '😍' | 'malicious' | undefined>(undefined);
   errorMsg = new UsableField<string>('');
 
-  async connect(): Promise<PrivateRoom> {
-    if (this.room.value) {
-      if (this.room.value.key.base58() === this.key.value.base58()) {
-        return this.room.value;
+  constructor() {
+    super();
+  }
+
+  async connect(): Promise<RtcPairSocket> {
+    if (this.socket.value) {
+      if (this.socket.value.pairingCode === this.key.value.base58()) {
+        return this.socket.value;
       }
 
-      this.room.value.socket.close();
+      this.socket.value.close();
     }
 
-    const room = new PrivateRoom(
-      'wss://rendezvous.deno.dev',
-      this.key.value,
+    console.log('connecting', this.key.value.base58(), this.mode);
+
+    const socket = new RtcPairSocket(
+      this.key.value.base58(),
+      this.mode === 'Host' ? 'alice' : 'bob',
     );
 
-    this.room.set(room);
+    this.socket.set(socket);
 
     // eslint-disable-next-line no-return-await
     return await new Promise(resolve => {
-      room.on('open', () => resolve(room));
+      socket.on('open', () => resolve(socket));
     });
   }
 
@@ -91,7 +97,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     room.on('message', listener);
   }
 
-  async runProtocol(room: PrivateRoom) {
+  async runProtocol(socket: RtcPairSocket) {
     this.page.set('Choose');
 
     const msgQueue = new AsyncQueue<unknown>();
@@ -100,16 +106,15 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
       from: z.literal(this.mode === 'Host' ? 'joiner' : 'host'),
     });
 
-    room.on('message', (msg: unknown) => {
+    socket.on('message', (msg: unknown) => {
       if (!FriendMsg.safeParse(msg).error) {
         msgQueue.push(msg);
       }
     });
 
     const channel = makeZodChannel(
-      (msg: unknown) => room.send(msg),
+      (msg: unknown) => socket.send(msg),
       () => msgQueue.shift(),
-      (msg: unknown) => msgQueue.push(msg),
     );
 
     const [choice, _readyMsg] = await Promise.all([
@@ -139,7 +144,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
 
     this.result.set(result);
 
-    room.socket.close();
+    socket.close();
 
     this.page.set('Result');
   }
@@ -157,7 +162,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
       this.page.set('Waiting');
     }
 
-    this.room.value!.send({
+    this.socket.value!.send({
       from: this.mode === 'Host' ? 'host' : 'joiner',
       type: 'ready',
     });

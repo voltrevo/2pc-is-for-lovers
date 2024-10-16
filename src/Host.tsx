@@ -1,13 +1,17 @@
 import CopyToClipboard from 'react-copy-to-clipboard';
 import Ctx from './Ctx';
 import { QRCodeCanvas } from 'qrcode.react';
+import { useEffect } from 'react';
 
 export default function Host() {
   const ctx = Ctx.use();
   const key = ctx.key.use();
-  ctx.host();
 
   const codeAndLink = `https://bit.ly/2pcifl#${key.base58()}`;
+
+  useEffect(() => {
+    ctx.host();
+  }, [ctx]);
 
   return (
     <div>

@@ -3,10 +3,8 @@ import { createContext, useContext } from 'react';
 import UsableField from './UsableField';
 import Emitter from './Emitter';
 import AsyncQueue from './AsyncQueue';
-import runHostProtocol from './runHostProtocol';
-import runJoinerProtocol from './runJoinerProtocol';
+import runProtocol from './runProtocol';
 import { makeZodChannel } from './ZodChannel';
-import { TrustedHashRevealer } from './TrustedHashRevealer';
 import { MessageInit, MessageReady, MessageStart } from './MessageTypes';
 import { Key, RtcPairSocket } from 'rtc-pair-socket';
 
@@ -63,14 +61,14 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
 
   async host() {
     this.mode = 'Host';
-    const room = await this.connect();
+    const socket = await this.connect();
 
-    room.removeAllListeners('message');
+    socket.removeAllListeners('message');
 
-    room.on('message', message => {
+    socket.on('message', message => {
       if (!MessageInit.safeParse(message).error) {
-        room.send({ from: 'host', type: 'start' });
-        this.runProtocol(room).catch(this.handleProtocolError);
+        socket.send({ from: 'host', type: 'start' });
+        this.runProtocol(socket).catch(this.handleProtocolError);
       }
     });
   }
@@ -84,17 +82,17 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
 
     this.mode = 'Join';
     this.key.set(Key.fromBase58(keyBase58));
-    const room = await this.connect();
-    room.send({ from: 'joiner', type: 'init' });
+    const socket = await this.connect();
+    socket.send({ from: 'joiner', type: 'init' });
 
     const listener = (message: unknown) => {
       if (!MessageStart.safeParse(message).error) {
-        room.off('message', listener);
-        this.runProtocol(room).catch(this.handleProtocolError);
+        socket.off('message', listener);
+        this.runProtocol(socket).catch(this.handleProtocolError);
       }
     };
 
-    room.on('message', listener);
+    socket.on('message', listener);
   }
 
   async runProtocol(socket: RtcPairSocket) {
@@ -106,11 +104,13 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
       from: z.literal(this.mode === 'Host' ? 'joiner' : 'host'),
     });
 
-    socket.on('message', (msg: unknown) => {
+    const msgListener = (msg: unknown) => {
       if (!FriendMsg.safeParse(msg).error) {
         msgQueue.push(msg);
       }
-    });
+    };
+
+    socket.on('message', msgListener);
 
     const channel = makeZodChannel(
       (msg: unknown) => socket.send(msg),
@@ -128,17 +128,11 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     ]);
 
     this.page.set('Calculating');
+    socket.off('message', msgListener);
 
-    const runSideProtocol = this.mode === 'Host'
-      ? runHostProtocol
-      : runJoinerProtocol;
-
-    const result = await runSideProtocol(
-      channel,
-      input => new TrustedHashRevealer(
-        'https://trusted-hash-revealer.deno.dev/keccak256',
-        input,
-      ),
+    const result = await runProtocol(
+      this.mode,
+      socket,
       choice,
     );
 

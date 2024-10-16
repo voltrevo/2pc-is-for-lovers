@@ -21,9 +21,20 @@ Yes. Really.
 This is an open source app.
 
 If you choose love but the result is friendship, only you will know. Even if
-your friend knows advanced cryptography.
+your friend knows [advanced cryptography](https://eprint.iacr.org/2017/030.pdf).
 
 This is the [magic](https://www.youtube.com/watch?v=PzcDqegGoKI) of 2PC.
 
 All communication is end-to-end encrypted. The server/internet will not know
 either.
+
+## Under the Hood
+
+This app is built with
+[mpc-framework](https://github.com/voltrevo/mpc-framework), which enables
+secure 2PC based on [*Authenticated Garbling and Efficient Maliciously Secure
+Two-Party Computation*](https://eprint.iacr.org/2017/030.pdf). In this app we
+only use a circuit with a single AND gate, but the framework allows you to
+compute any function (in principle) by using larger circuits, which can be
+compiled using a TypeScript-like language called
+[summon](https://github.com/voltrevo/summon).

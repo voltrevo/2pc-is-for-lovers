@@ -21,4 +21,14 @@ export default class AsyncQueue<T> {
       this.pendingResolves.push(resolve);
     });
   }
+
+  stream(handler: (msg: T) => void) {
+    const loop = async () => {
+      const msg = await this.shift();
+      handler(msg);
+      loop();
+    };
+
+    loop();
+  }
 }

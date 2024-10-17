@@ -4,12 +4,19 @@ import { EmpWasmBackend } from 'emp-wasm-backend';
 import * as summon from 'summon-ts';
 import { RtcPairSocket } from 'rtc-pair-socket';
 import assert from './assert';
+import AsyncQueue from './AsyncQueue';
 
 export default async function runProtocol(
   mode: 'Host' | 'Join',
   socket: RtcPairSocket,
   choice: '🙂' | '😍',
 ) {
+  const msgQueue = new AsyncQueue<unknown>();
+
+  socket.on('message', msg => {
+    msgQueue.push(msg);
+  });
+
   await summon.init();
 
   const circuit = summon.compileBoolean('/src/main.ts', 1, {
@@ -53,7 +60,7 @@ export default async function runProtocol(
     },
   );
 
-  socket.on('message', msg => {
+  msgQueue.stream(msg => {
     if (!(msg instanceof Uint8Array)) {
       console.error(new Error('Expected Uint8Array'));
       return;

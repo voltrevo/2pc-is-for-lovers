@@ -10,11 +10,21 @@ export default async function runProtocol(
   mode: 'Host' | 'Join',
   socket: RtcPairSocket,
   choice: '🙂' | '😍',
+  onProgress?: (progress: number) => void,
 ) {
   const msgQueue = new AsyncQueue<unknown>();
 
-  socket.on('message', msg => {
+  const TOTAL_BYTES = 254734;
+  let currentBytes = 0;
+
+  socket.on('message', (msg: Uint8Array) => {
     msgQueue.push(msg);
+
+    currentBytes += msg.byteLength;
+
+    if (onProgress) {
+      onProgress(currentBytes / TOTAL_BYTES);
+    }
   });
 
   await summon.init();
@@ -57,6 +67,12 @@ export default async function runProtocol(
     (to, msg) => {
       assert(to === otherParty);
       socket.send(msg);
+
+      currentBytes += msg.byteLength;
+
+      if (onProgress) {
+        onProgress(currentBytes / TOTAL_BYTES);
+      }
     },
   );
 

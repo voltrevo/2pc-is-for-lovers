@@ -30,6 +30,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
   friendReady = false;
   result = new UsableField<'🙂' | '😍' | 'malicious' | undefined>(undefined);
   errorMsg = new UsableField<string>('');
+  mpcProgress = new UsableField<number>(0);
 
   constructor() {
     super();
@@ -134,6 +135,9 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
       this.mode,
       socket,
       choice,
+      percentage => {
+        this.mpcProgress.set(percentage);
+      },
     );
 
     this.result.set(result);

@@ -13,7 +13,6 @@ type PageKind =
   | 'Share'
   | 'Host'
   | 'Join'
-  | 'AutoJoin'
   | 'Connecting'
   | 'Choose'
   | 'Waiting'

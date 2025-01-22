@@ -1,10 +1,20 @@
 import './Home.css';
 import Ctx from './Ctx';
 import isKey from './isKey';
+import { useEffect } from 'react';
 
 export default function Home() {
   const ctx = Ctx.use();
-  const hasUrlKey = isKey(window.location.hash.slice(1));
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const code = url.hash.slice(1);
+
+    if (isKey(code)) {
+      window.location.hash = '';
+      ctx.join(code);
+    }
+  }, [ctx]);
 
   return (
     <div>
@@ -62,18 +72,10 @@ export default function Home() {
         know either.
       </p>
       <div className='main buttons'>
-        <button disabled={hasUrlKey} onClick={() => ctx.page.set('Host')}>
+        <button onClick={() => ctx.page.set('Host')}>
           Host
         </button>
-        <button onClick={() => {
-          const urlKey = window.location.hash.slice(1);
-
-          if (isKey(urlKey)) {
-            ctx.page.set('AutoJoin');
-          } else {
-            ctx.page.set('Join');
-          }
-        }}>
+        <button onClick={() => ctx.page.set('Join')}>
           Join
         </button>
       </div>

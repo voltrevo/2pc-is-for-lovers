@@ -20,6 +20,16 @@ type PageKind =
   | 'Result'
   | 'Error';
 
+const rtcConfig = (() => {
+  const envVar = import.meta.env.VITE_RTC_CONFIGURATION;
+
+  if (!envVar) {
+    return undefined;
+  }
+
+  return JSON.parse(envVar);
+})();
+
 export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void }> {
   page = new UsableField<PageKind>('Home');
   mode: 'Host' | 'Join' = 'Host';
@@ -49,6 +59,7 @@ export default class Ctx extends Emitter<{ ready(choice: '🙂' | '😍'): void 
     const socket = new RtcPairSocket(
       this.key.value.base58(),
       this.mode === 'Host' ? 'alice' : 'bob',
+      rtcConfig,
     );
 
     this.socket.set(socket);

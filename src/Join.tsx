@@ -9,7 +9,7 @@ export default function Join() {
   const tryJoin = (text: string) => {
     let key;
 
-    if (text.startsWith('https://')) {
+    if (/^\s*https?:\/\//.test(text)) {
       const url = new URL(text);
       key = url.hash.slice(1);
     } else {

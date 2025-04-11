@@ -9,9 +9,7 @@ export default function Host() {
 
   const rawUrl = `${window.location.origin}${window.location.pathname}`;
 
-  const codeAndLink = rawUrl === 'https://voltrevo.github.io/2pc-is-for-lovers/'
-    ? `https://bit.ly/2pcifl#${key.base58()}`
-    : `${rawUrl}#${key.base58()}`;
+  const codeAndLink = `${rawUrl}#${key.base58()}`;
 
   useEffect(() => {
     ctx.host();
